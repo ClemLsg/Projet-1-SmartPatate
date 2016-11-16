@@ -28,10 +28,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import java.io.FileWriter;
+import java.io.*;
 import processing.serial.*;
 
 Serial port;  // Create object from Serial class
+int touch;
 int val;      // Data received from the serial port
 int[] values;
 float zoom;
@@ -46,7 +47,7 @@ void settings(){
 void setup() 
 {
   // Open the port that the board is connected to and use the same speed
-  port = new Serial(this, "COM7", 115200);
+  port = new Serial(this, "COM8", 115200);
   values = new int[width];
   zoom = 1.0f;
   smooth();
@@ -142,18 +143,21 @@ void drawValue(float v)
   //draw rectangle background for value
   fill(0);
   rect(width-100, height-20,100, 20);
-  
+  if(v>2.8){touch=0;}
+  if(v<2.8 && v>2.76 ){touch=1;}
+  if(v<2.759 && v>2.735 ){touch=2;}
+  if(v<2.734){touch=3;}
   //print volt value
   String s = str(v)+"V";
   fill(0,255,0);
   text(s, width-100, height);
-///  print(v);
-////  FileWriter fw = new FileWriter (f);
-//  String strAmount = String.valueOf(v);
- // fw.Write("3");
-PrintWriter out = new PrintWriter("var.txt");
-out.println(v);
-out.close();
+  try{
+    PrintWriter writer = new PrintWriter(new FileOutputStream(new File("var.txt")));
+    writer.println(touch);
+    writer.close();
+  }catch(Exception E){
+    E.printStackTrace();
+  }
              
 }
 
